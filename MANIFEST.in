@@ -1,0 +1,2 @@
+recursive-include librarian_sdr *
+recursive-exclude tests *
