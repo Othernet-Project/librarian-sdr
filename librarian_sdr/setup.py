@@ -6,7 +6,7 @@ from bottle_utils.i18n import lazy_gettext as _
 from librarian.core.exts import ext_container as exts
 
 from .forms import SDRForm
-from .helpers import save_sdr, restart_tuners
+from .helpers import save_sdr, bootup_sdr
 
 
 def context(successful=False, form=None, message=None):
@@ -38,7 +38,7 @@ class SDRStep(object):
             try:
                 path = exts.config['sdr.binary_path']
                 save_sdr(uploaded_binary.file, path)
-                restart_tuners()
+                bootup_sdr()
                 return dict(successful=True)
             except:
                 logging.exception('Exception during SDR installation')
