@@ -23,8 +23,5 @@
 <div id="sdr-form">
     ${forms.form_errors([message]) if message else ''}
     ${forms.field(form.sdr_binary)}
-    <button type="submit">
-        ${_('Upload')}
-    </button>
 </div>
 </%block>
