@@ -21,10 +21,7 @@
 <p class="o-field-help-message"> ${_('The software demodulator must be installed separately. Please upload the demodulator executable.')} </p>
 
 <div id="sdr-form">
-    ${forms.form_message(message)}
+    ${forms.form_errors([message]) if message else ''}
     ${forms.field(form.sdr_binary)}
-    <button type="submit">
-        ${_('Upload')}
-    </button>
 </div>
 </%block>
