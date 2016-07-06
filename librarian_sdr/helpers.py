@@ -29,11 +29,6 @@ def save_sdr(sdr, path):
         raise
 
 
-def restart_tuners():
-    """ Restarts SDR & ONDD by restarting the processes."""
-    exts.tasks.schedule(_restart_tuners)
-
-
 def copy_file(src, dest_path, buff_size=2 ** 16):
     with open(dest_path, 'wb') as dest:
         while True:
@@ -43,16 +38,29 @@ def copy_file(src, dest_path, buff_size=2 ** 16):
             dest.write(buff)
 
 
-def _restart_tuners():
-    restart_service(ONDD_SERVICE)
-    restart_service(SDR_SERVICE)
+def bootup_sdr():
+    exts.tasks.schedule(start_sdr,
+                        args=(exts.config['sdr.sdr_restart_command'],
+                              exts.config['sdr.ondd_restart_command']))
 
 
-def restart_service(name):
-    logging.debug("Restarting service: '{}'".format(name))
+def start_sdr(sdr_command, ondd_command):
+    ondd_alive = exts.ondd.ping()
+    if not ondd_alive:
+        # ONDD needs to be up before sdr100, because sdr100 does not connect
+        # with ONDD correctly otherwise
+        logging.info('Could not connect to ONDD. Starting ONDD')
+        run_command(ondd_command)
+    logging.info('Restarting sdr100')
+    run_command(sdr_command)
+
+
+def run_command(command):
     try:
-        exit_code = subprocess.call(['service', name, 'restart'])
+        exit_code = subprocess.call(command, shell=True)
+        if exit_code:
+            logging.debug("'{}' returned {}".format(exit_code))
+        return exit_code
     except:
-        logging.exception('Exception while restarting service {}'.format(name))
-        return 1
-    return exit_code
+        logging.exception("Exception while running '{}'".format(command))
+        raise
