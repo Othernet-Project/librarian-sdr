@@ -37,7 +37,7 @@ class SDRStep(object):
             uploaded_binary = form.processed_data['sdr_binary']
             try:
                 path = exts.config['sdr.binary_path']
-                save_sdr(uploaded_binary.file, path)
+                save_sdr(uploaded_binary, path)
                 restart_tuners()
                 return dict(successful=True)
             except:
