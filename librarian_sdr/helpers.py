@@ -16,7 +16,8 @@ def save_sdr(sdr, path):
     """
     if os.path.exists(path):
         logging.info('Replacing existing sdr binary')
-    logging.debug('Saving sdr binary at path {}'.format(path))
+        os.remove(path)
+    logging.debug('Saving sdr binary at path %s', path)
     try:
         sdr.save(path)
         # Set the executable to be world executable
