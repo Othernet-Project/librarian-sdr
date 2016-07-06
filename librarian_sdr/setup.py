@@ -33,18 +33,19 @@ class SDRStep(object):
     def post():
         form = SDRForm(request.files)
         valid = form.is_valid()
-        if valid:
-            uploaded_binary = form.processed_data['sdr_binary']
-            try:
-                path = exts.config['sdr.binary_path']
-                save_sdr(uploaded_binary, path)
-                restart_tuners()
-                return dict(successful=True)
-            except:
-                logging.exception('Exception during SDR installation')
-                # Translators, shown when installation of SDR executable failed
-                # during setup wizard step.
-                return context(message=_('Demodulator Installation failed'))
-        else:
+        if not valid:
             # Translators, shown as a prompt to user during setup wizard step.
             return context(message=_('Please select the demodulator executable'))
+        # validation passed, attempt saving the binary
+        uploaded_binary = form.processed_data['sdr_binary']
+        try:
+            path = exts.config['sdr.binary_path']
+            save_sdr(uploaded_binary, path)
+            restart_tuners()
+        except Exception:
+            logging.exception('Exception during SDR installation')
+            # Translators, shown when installation of SDR executable failed
+            # during setup wizard step.
+            return context(message=_('Demodulator Installation failed'))
+        else:
+            return dict(successful=True)
