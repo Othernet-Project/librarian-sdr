@@ -22,11 +22,14 @@ def save_sdr(sdr, path):
         sdr.save(path)
         # Set the executable to be world executable
         # 755 => rwxr-xr-x
-        mode = stat.S_IRWXU | stat.S_IRGRP | stat.S_IXGRP | stat.S_IROTH | stat.S_IXOTH
+        mode = (stat.S_IRWXU |
+                stat.S_IRGRP |
+                stat.S_IXGRP |
+                stat.S_IROTH |
+                stat.S_IXOTH)
         os.chmod(path, mode)
-    except:
-        logging.exception('Exception while saving SDR binary at {}'.format(
-            path))
+    except Exception:
+        logging.exception('Exception while saving SDR binary at %s', path)
         raise
 
 
@@ -41,10 +44,9 @@ def _restart_tuners():
 
 
 def restart_service(name):
-    logging.debug("Restarting service: '{}'".format(name))
+    logging.debug("Restarting service: '%s'", name)
     try:
-        exit_code = subprocess.call(['service', name, 'restart'])
-    except:
-        logging.exception('Exception while restarting service {}'.format(name))
+        return subprocess.call(['service', name, 'restart'])
+    except Exception:
+        logging.exception("Exception while restarting service '%s'", name)
         return 1
-    return exit_code
