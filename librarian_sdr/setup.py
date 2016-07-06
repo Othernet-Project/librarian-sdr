@@ -6,7 +6,7 @@ from bottle_utils.i18n import lazy_gettext as _
 from librarian.core.exts import ext_container as exts
 
 from .forms import SDRForm
-from .helpers import save_sdr, restart_tuners
+from .helpers import save_sdr, bootup_sdr
 
 
 def context(successful=False, form=None, message=None):
@@ -32,8 +32,7 @@ class SDRStep(object):
     @staticmethod
     def post():
         form = SDRForm(request.files)
-        valid = form.is_valid()
-        if not valid:
+        if not form.is_valid():
             # Translators, shown as a prompt to user during setup wizard step.
             return context(message=_('Please select the demodulator executable'))
         # validation passed, attempt saving the binary
@@ -41,7 +40,7 @@ class SDRStep(object):
         try:
             path = exts.config['sdr.binary_path']
             save_sdr(uploaded_binary, path)
-            restart_tuners()
+            bootup_sdr()
         except Exception:
             logging.exception('Exception during SDR installation')
             # Translators, shown when installation of SDR executable failed
