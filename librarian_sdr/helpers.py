@@ -18,19 +18,15 @@ def save_sdr(sdr, path):
         logging.info('Replacing existing sdr binary')
         os.remove(path)
     logging.debug('Saving sdr binary at path %s', path)
-    try:
-        sdr.save(path)
-        # Set the executable to be world executable
-        # 755 => rwxr-xr-x
-        mode = (stat.S_IRWXU |
-                stat.S_IRGRP |
-                stat.S_IXGRP |
-                stat.S_IROTH |
-                stat.S_IXOTH)
-        os.chmod(path, mode)
-    except Exception:
-        logging.exception('Exception while saving SDR binary at %s', path)
-        raise
+    sdr.save(path)
+    # Set the executable to be world executable
+    # 755 => rwxr-xr-x
+    mode = (stat.S_IRWXU |
+            stat.S_IRGRP |
+            stat.S_IXGRP |
+            stat.S_IROTH |
+            stat.S_IXOTH)
+    os.chmod(path, mode)
 
 
 def restart_tuners():
